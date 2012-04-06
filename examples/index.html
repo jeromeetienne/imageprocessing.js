@@ -1,7 +1,49 @@
 <!doctype html>
 <body>
+	<div><canvas id='canvasOriginal'></canvas>	<label>original</label></div>
+	<div><canvas id='canvasFliph'></canvas>		<label>fliph</label></div>
+	<div><canvas id='canvasLuminance'></canvas>	<label>luminance</label></div>
+
 	<script src="../imagedata.js"></script>
+
 	<script>
+		// get ctxOrig
+		var canvas	= document.getElementById('canvasOriginal');
+		var ctxOrig	= canvas.getContext('2d');
+
+		// set width/height on all canvases
+		var canvases	= document.getElementsByTagName('canvas');
+		for(var i = 0; i < canvases.length; i++){
+			var canvas	= canvases[i];
+			canvas.width	= 64*2;
+			canvas.height	= 64*2;
+		};
+
+		var image	= new Image();
+		image.onload	= function (){
+			processing(image)
+		};
+		image.src	= 'lenna.png';
 		
+		setTimeout(processing, 100)
+
+		function processing(imageEl){
+			// copy the original image
+			ctxOrig.drawImage(imageEl, 0, 0, ctxOrig.canvas.width, ctxOrig.canvas.height);
+			// get imageData
+			var imgDataOrig	= ctxOrig.getImageData(0, 0, canvas.width, canvas.height);
+
+			// fliph
+			var imgDataDst	= ImageData.duplicate(imgDataOrig, ctxOrig);
+			ImageData.fliph(imgDataDst);
+			var ctxDst	= document.getElementById('canvasFliph').getContext('2d')
+			ctxDst.putImageData(imgDataDst, 0, 0);
+
+			// luminance
+			var imgDataDst	= ImageData.duplicate(imgDataOrig, ctxOrig);
+			ImageData.luminance(imgDataDst);
+			var ctxDst	= document.getElementById('canvasLuminance').getContext('2d')
+			ctxDst.putImageData(imgDataDst, 0, 0);
+		};
 	</script>
 </body>
