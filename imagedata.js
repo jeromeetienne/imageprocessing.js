@@ -1,3 +1,6 @@
+/**
+ * @namespace
+*/
 var ImageData	= {};
 
 ImageData.fliph	= function(imageData)
@@ -30,6 +33,9 @@ ImageData.fliph	= function(imageData)
 	}
 }
 
+/**
+ * Convert the image to luminance
+*/
 ImageData.luminance	= function(imageData, ratio)
 {
 	ratio	= ratio !== undefined ? ratio : 1.0;
@@ -47,6 +53,9 @@ ImageData.luminance	= function(imageData, ratio)
 	}
 }
 
+/**
+ * Duplicate the ImageData
+*/
 ImageData.duplicate	= function(srcImageData, ctx)
 {
 	var dstImageData= ctx.createImageData(srcImageData);
