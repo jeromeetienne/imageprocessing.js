@@ -3,6 +3,7 @@
 	<div><canvas id='canvasOriginal'></canvas>	<label>original</label></div>
 	<div><canvas id='canvasFliph'></canvas>		<label>fliph</label></div>
 	<div><canvas id='canvasLuminance'></canvas>	<label>luminance</label></div>
+	<div><canvas id='canvasSobel'></canvas>	<label>sobel</label></div>
 
 	<script src="../imagedata.js"></script>
 
@@ -39,6 +40,12 @@
 			var ctxDst	= document.getElementById('canvasLuminance').getContext('2d')
 			var imgDataDst	= ImageData.duplicate(imgDataOrig, ctxOrig);
 			ImageData.luminance(imgDataDst);
+			ctxDst.putImageData(imgDataDst, 0, 0);
+
+			// emboss
+			var ctxDst	= document.getElementById('canvasSobel').getContext('2d')
+			var imgDataDst	= ImageData.duplicate(imgDataOrig, ctxOrig);
+			ImageData.sobel(imgDataDst, ctxOrig );
 			ctxDst.putImageData(imgDataDst, 0, 0);
 		};
 	</script>
