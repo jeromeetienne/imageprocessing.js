@@ -6,12 +6,12 @@
 /**
  * @namespace
 */
-var ImageData	= {};
+var ImgProc	= {};
 
 /**
  * horizontal flip
 */
-ImageData.fliph	= function(imageData)
+ImgProc.fliph	= function(imageData)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -44,7 +44,7 @@ ImageData.fliph	= function(imageData)
 /**
  * Convert the image to luminance
 */
-ImageData.luminance	= function(imageData, ratio)
+ImgProc.luminance	= function(imageData, ratio)
 {
 	ratio	= ratio !== undefined ? ratio : 1.0;
 	var p	= imageData.data;
@@ -62,17 +62,17 @@ ImageData.luminance	= function(imageData, ratio)
 }
 
 /**
- * Duplicate the ImageData
+ * Duplicate the ImgProc
 */
-ImageData.duplicate	= function(srcImageData, ctx)
+ImgProc.duplicate	= function(srcImgProc, ctx)
 {
-	var dstImageData= ctx.createImageData(srcImageData);
-	var pSrc	= srcImageData.data;
-	var pDst	= dstImageData.data;
+	var dstImgProc= ctx.createImageData(srcImgProc);
+	var pSrc	= srcImgProc.data;
+	var pDst	= dstImgProc.data;
 	for(var i = 0; i < pSrc.length; i++){
 		pDst[i]	= pSrc[i];
 	}
-	return dstImageData;
+	return dstImgProc;
 }
 
 
@@ -85,12 +85,12 @@ ImageData.duplicate	= function(srcImageData, ctx)
  * 
  * see http://en.wikipedia.org/wiki/Sobel_operator
 */
-ImageData.sobel = function(srcImageData, dstImageData)
+ImgProc.sobel = function(srcImgProc, dstImgProc)
 {
-	var pSrc= srcImageData.data;
-	var w	= srcImageData.width;
-	var h	= srcImageData.height;
-	var pDst= dstImageData.data;
+	var pSrc= srcImgProc.data;
+	var w	= srcImgProc.width;
+	var h	= srcImgProc.height;
+	var pDst= dstImgProc.data;
 	// TODO make be optimized http://en.wikipedia.org/wiki/Sobel_operator#Technical_details
 	var sobel_x	= [	[-1,0,1],
 				[-2,0,2],
@@ -130,7 +130,7 @@ ImageData.sobel = function(srcImageData, dstImageData)
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
-ImageData.threshold	= function(imageData, r, g, b)
+ImgProc.threshold	= function(imageData, r, g, b)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -147,7 +147,7 @@ ImageData.threshold	= function(imageData, r, g, b)
 	}
 }
 
-ImageData.convert	= function(imageData, callback)
+ImgProc.convert	= function(imageData, callback)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -165,7 +165,7 @@ ImageData.convert	= function(imageData, callback)
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
-ImageData.hline	= function(imageData, y, r, g, b, a)
+ImgProc.hline	= function(imageData, y, r, g, b, a)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -182,7 +182,7 @@ ImageData.hline	= function(imageData, y, r, g, b, a)
 	}
 }
 
-ImageData.vline	= function(imageData, x, r, g, b, a)
+ImgProc.vline	= function(imageData, x, r, g, b, a)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -203,7 +203,7 @@ ImageData.vline	= function(imageData, x, r, g, b, a)
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
-ImageData.smoothHistogram	= function(hist, factor)
+ImgProc.smoothHistogram	= function(hist, factor)
 {
 	var value	= 0;
 	for(var i = 0; i < hist.length; i++ ){
@@ -212,7 +212,7 @@ ImageData.smoothHistogram	= function(hist, factor)
 	}
 }
 
-ImageData.windowedAverageHistogram	= function(hist, width)
+ImgProc.windowedAverageHistogram	= function(hist, width)
 {
 	var halfW	= Math.floor(width/2);
 	var winSum	= 0;
@@ -242,7 +242,7 @@ ImageData.windowedAverageHistogram	= function(hist, width)
 	}
 }
 
-ImageData.getMaxHistogram	= function(hist, imageData)
+ImgProc.getMaxHistogram	= function(hist, imageData)
 {
 	var max	= -Number.MAX_VALUE;
 	var idx	= 0;
@@ -260,7 +260,7 @@ ImageData.getMaxHistogram	= function(hist, imageData)
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
-ImageData.computeVerticalHistogram	= function(imageData, filter)
+ImgProc.computeVerticalHistogram	= function(imageData, filter)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -275,7 +275,7 @@ ImageData.computeVerticalHistogram	= function(imageData, filter)
 	return hist;
 }
 
-ImageData.displayVerticalHistogram	= function(imageData, hist)
+ImgProc.displayVerticalHistogram	= function(imageData, hist)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -292,7 +292,7 @@ ImageData.displayVerticalHistogram	= function(imageData, hist)
 		ctx.fillRect(x, h-hist[x], 1, hist[x]);
 	}
 	// copy the canvas in imageData
-	var srcImgData	= ctx.getImageData(0,0, canvas.width, canvas.height);
+	var srcImgData	= ctx.getImgProc(0,0, canvas.width, canvas.height);
 	var pSrc	= srcImgData.data;
 	var pDst	= imageData.data;
 	for(var i = 0; i < pSrc.length; i += 4){
@@ -311,7 +311,7 @@ ImageData.displayVerticalHistogram	= function(imageData, hist)
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
-ImageData.computeHorizontalHistogram	= function(imageData, filter)
+ImgProc.computeHorizontalHistogram	= function(imageData, filter)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -326,7 +326,7 @@ ImageData.computeHorizontalHistogram	= function(imageData, filter)
 	return hist;
 }
 
-ImageData.displayHorizontalHistogram	= function(imageData, hist)
+ImgProc.displayHorizontalHistogram	= function(imageData, hist)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -343,7 +343,7 @@ ImageData.displayHorizontalHistogram	= function(imageData, hist)
 		ctx.fillRect(0, y, hist[y], 1);
 	}
 	// copy the canvas in imageData
-	var srcImgData	= ctx.getImageData(0,0, canvas.width, canvas.height);
+	var srcImgData	= ctx.getImgProc(0,0, canvas.width, canvas.height);
 	var pSrc	= srcImgData.data;
 	var pDst	= imageData.data;
 	for(var i = 0; i < pSrc.length; i += 4){
@@ -361,7 +361,7 @@ ImageData.displayHorizontalHistogram	= function(imageData, hist)
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
-ImageData.computeColorHistogram	= function(imageData)
+ImgProc.computeColorHistogram	= function(imageData)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -382,7 +382,7 @@ ImageData.computeColorHistogram	= function(imageData)
 	return hist;
 }
 
-ImageData.normalizeColorHistogram	= function(colorHistogram)
+ImgProc.normalizeColorHistogram	= function(colorHistogram)
 {
 	var hist= colorHistogram;
 
@@ -411,7 +411,7 @@ ImageData.normalizeColorHistogram	= function(colorHistogram)
 	console.log("sum", max, sumR, sumG, sumB)
 }
 
-ImageData.displayColorHistogram	= function(imageData, colorHistogram)
+ImgProc.displayColorHistogram	= function(imageData, colorHistogram)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -448,7 +448,7 @@ ImageData.displayColorHistogram	= function(imageData, colorHistogram)
 		ctx.fillRect(i*barW, barYOffset+(barH-valH), barW, valH);
 	}
 
-	var srcImgData	= ctx.getImageData(0,0, canvas.width, canvas.height);
+	var srcImgData	= ctx.getImgProc(0,0, canvas.width, canvas.height);
 	var pSrc	= srcImgData.data;
 	var pDst	= imageData.data;
 	for(var i = 0; i < pSrc.length; i += 4){

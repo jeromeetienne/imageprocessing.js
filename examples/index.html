@@ -32,20 +32,20 @@
 
 			// fliph
 			var ctxDst	= document.getElementById('canvasFliph').getContext('2d')
-			var imgDataDst	= ImageData.duplicate(imgDataOrig, ctxOrig);
-			ImageData.fliph(imgDataDst);
+			var imgDataDst	= ImgProc.duplicate(imgDataOrig, ctxOrig);
+			ImgProc.fliph(imgDataDst);
 			ctxDst.putImageData(imgDataDst, 0, 0);
 
 			// luminance
 			var ctxDst	= document.getElementById('canvasLuminance').getContext('2d')
-			var imgDataDst	= ImageData.duplicate(imgDataOrig, ctxOrig);
-			ImageData.luminance(imgDataDst);
+			var imgDataDst	= ImgProc.duplicate(imgDataOrig, ctxOrig);
+			ImgProc.luminance(imgDataDst);
 			ctxDst.putImageData(imgDataDst, 0, 0);
 
 			// sobel
 			var ctxDst	= document.getElementById('canvasSobel').getContext('2d')
-			var imgDataDst	= ImageData.duplicate(imgDataOrig, ctxOrig);
-			ImageData.sobel(imgDataOrig, imgDataDst);
+			var imgDataDst	= ImgProc.duplicate(imgDataOrig, ctxOrig);
+			ImgProc.sobel(imgDataOrig, imgDataDst);
 			ctxDst.putImageData(imgDataDst, 0, 0);
 		};
 	</script>
