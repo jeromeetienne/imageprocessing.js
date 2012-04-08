@@ -42,10 +42,10 @@
 			ImageData.luminance(imgDataDst);
 			ctxDst.putImageData(imgDataDst, 0, 0);
 
-			// emboss
+			// sobel
 			var ctxDst	= document.getElementById('canvasSobel').getContext('2d')
 			var imgDataDst	= ImageData.duplicate(imgDataOrig, ctxOrig);
-			ImageData.sobel(imgDataDst, ctxOrig );
+			ImageData.sobel(imgDataOrig, imgDataDst);
 			ctxDst.putImageData(imgDataDst, 0, 0);
 		};
 	</script>
