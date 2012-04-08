@@ -17,6 +17,6 @@ docs:
 			-D="title:ImageData library"			\
 			-t=${JSDOC_ROOT}/templates/Codeview/		\
 			-d=docs/					\
-			imagedata.js
+			imageprocessing.js
 
 .PHONY: docs
