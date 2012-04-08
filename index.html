@@ -87,6 +87,12 @@
 				<div class="caption"><h5>Sobel</h5></div>
 			</div>
 		</div>
+		<div class='span2'>
+			<div class="thumbnail">
+				<canvas id='canvasInvert'></canvas>
+				<div class="caption"><h5>Invert</h5></div>
+			</div>
+		</div>
 
     </div> <!-- /container -->
 
@@ -148,6 +154,12 @@
 			var ctxDst	= document.getElementById('canvasSobel').getContext('2d')
 			var imgDataDst	= ImgProc.duplicate(imgDataOrig, ctxOrig);
 			ImgProc.sobel(imgDataOrig, imgDataDst);
+			ctxDst.putImageData(imgDataDst, 0, 0);
+
+			// invert
+			var ctxDst	= document.getElementById('canvasInvert').getContext('2d')
+			var imgDataDst	= ImgProc.duplicate(imgDataOrig, ctxOrig);
+			ImgProc.invert(imgDataDst);
 			ctxDst.putImageData(imgDataDst, 0, 0);
 		};
 	</script>
