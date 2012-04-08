@@ -1,8 +1,16 @@
 /**
+ * @author jerome etienne jerome.etienne@gmail.com
+ * @author Djordje Lukic lukic.djordje@gmail.com
+*/
+
+/**
  * @namespace
 */
 var ImageData	= {};
 
+/**
+ * horizontal flip
+*/
 ImageData.fliph	= function(imageData)
 {
 	var p	= imageData.data;
@@ -73,42 +81,49 @@ ImageData.duplicate	= function(srcImageData, ctx)
 //////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Sobel operator (emboss)
+ * Sobel operator
+ * 
+ * see http://en.wikipedia.org/wiki/Sobel_operator
 */
-ImageData.sobel = function(imageData, ctx) {
-	var p	= ImageData.duplicate(imageData, ctx);
-	var w	= imageData.width;
-	var h	= imageData.height;
-	var sobel_x = [[-1,0,1],
-	              [-2,0,2],
-	              [-1,0,1]];
-  var sobel_y = [[-1,-2,-1],
-  	            [0,0,0],
-                [1,2,1]];
+ImageData.sobel = function(srcImageData, dstImageData)
+{
+	var pSrc= srcImageData.data;
+	var w	= srcImageData.width;
+	var h	= srcImageData.height;
+	var pDst= dstImageData.data;
+	// TODO make be optimized http://en.wikipedia.org/wiki/Sobel_operator#Technical_details
+	var sobel_x	= [	[-1,0,1],
+				[-2,0,2],
+				[-1,0,1]
+			];
+	var sobel_y	= [	[-1,-2,-1],
+				[ 0, 0, 0],
+				[ 1, 2, 1]
+			];
   
-  var greyAt = function(id, x, y) {
-    var offset = x * 4 + y * imageData.width * 4;
-    return id.data[offset] * 0.3 + id.data[offset + 1] * 0.59 + id.data[offset + 2] * 0.11;
-  }
-
+	var greyAt = function(p, x, y) {
+		var offset	= x * 4 + y * w * 4;
+		return p[offset] * 0.3 + p[offset + 1] * 0.59 + p[offset + 2] * 0.11;
+	}
+	// TODO instead of recomputing the index everytime, make it incremental
 	for(var x = 1; x < w - 2; x++) {
-	  for(var y = 1; y < h - 2; y++) {
-      var px = (sobel_x[0][0] * greyAt(p, x-1,y-1)) + (sobel_x[0][1] * greyAt(p, x,y-1)) + (sobel_x[0][2] * greyAt(p, x+1,y-1)) +
-               (sobel_x[1][0] * greyAt(p, x-1,y))   + (sobel_x[1][1] * greyAt(p, x,y))   + (sobel_x[1][2] * greyAt(p, x+1,y))   +
-               (sobel_x[2][0] * greyAt(p, x-1,y+1)) + (sobel_x[2][1] * greyAt(p, x,y+1)) + (sobel_x[2][2] * greyAt(p, x+1,y+1))
-
-      var py = (sobel_y[0][0] * greyAt(p, x-1,y-1)) + (sobel_y[0][1] * greyAt(p, x,y-1)) + (sobel_y[0][2] * greyAt(p, x+1,y-1)) +
-               (sobel_y[1][0] * greyAt(p, x-1,y))   + (sobel_y[1][1] * greyAt(p, x,y))   + (sobel_y[1][2] * greyAt(p, x+1,y))   +
-               (sobel_y[2][0] * greyAt(p, x-1,y+1)) + (sobel_y[2][1] * greyAt(p, x,y+1)) + (sobel_y[2][2] * greyAt(p, x+1,y+1))
-
-      var val = Math.ceil(Math.sqrt(px * px + py * py));
-
-      var offset = y * w * 4 + x * 4;
-      imageData.data[offset + 0] = val;
-      imageData.data[offset + 1] = val;
-      imageData.data[offset + 2] = val;
-    }
-  }  
+		for(var y = 1; y < h - 2; y++) {
+			var px = (sobel_x[0][0] * greyAt(pSrc, x-1,y-1)) + (sobel_x[0][1] * greyAt(pSrc, x,y-1)) + (sobel_x[0][2] * greyAt(pSrc, x+1,y-1)) +
+				 (sobel_x[1][0] * greyAt(pSrc, x-1,y))   + (sobel_x[1][1] * greyAt(pSrc, x,y))   + (sobel_x[1][2] * greyAt(pSrc, x+1,y))   +
+				 (sobel_x[2][0] * greyAt(pSrc, x-1,y+1)) + (sobel_x[2][1] * greyAt(pSrc, x,y+1)) + (sobel_x[2][2] * greyAt(pSrc, x+1,y+1))
+			
+			var py = (sobel_y[0][0] * greyAt(pSrc, x-1,y-1)) + (sobel_y[0][1] * greyAt(pSrc, x,y-1)) + (sobel_y[0][2] * greyAt(pSrc, x+1,y-1)) +
+				 (sobel_y[1][0] * greyAt(pSrc, x-1,y))   + (sobel_y[1][1] * greyAt(pSrc, x,y))   + (sobel_y[1][2] * greyAt(pSrc, x+1,y))   +
+				 (sobel_y[2][0] * greyAt(pSrc, x-1,y+1)) + (sobel_y[2][1] * greyAt(pSrc, x,y+1)) + (sobel_y[2][2] * greyAt(pSrc, x+1,y+1))
+	
+			var val = Math.ceil(Math.sqrt(px * px + py * py));
+			
+			var offset	= y * w * 4 + x * 4;
+			pDst[offset+0]	= val;
+			pDst[offset+1]	= val;
+			pDst[offset+2]	= val;
+		}
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -388,30 +403,6 @@ ImageData.normalizeColorHistogram	= function(colorHistogram)
 	var sumR	= 0;
 	var sumG	= 0;
 	var sumB	= 0;
-	for (var i = 0; i < 256; i++ ){
-		sumR	+= hist.r[i];
-		sumG	+= hist.g[i];
-		sumB	+= hist.b[i];
-	}
-	console.log("sum", max, sumR, sumG, sumB)
-}
-
-ImageData.normalizeColorHistogram0	= function(colorHistogram)
-{
-	var hist= colorHistogram;
-
-	// get the max value
-	var max	= -Number.MAX_VALUE;
-	for (var i = 0; i < 256; i++ )	max		= Math.max(max, hist.r[i]);
-	for (var i = 0; i < 256; i++ )	hist.r[i]	/= max;
-	var max	= -Number.MAX_VALUE;
-	for (var i = 0; i < 256; i++ )	max		= Math.max(max, hist.g[i]);
-	for (var i = 0; i < 256; i++ )	hist.g[i]	/= max;
-	var max	= -Number.MAX_VALUE;
-	for (var i = 0; i < 256; i++ )	max		= Math.max(max, hist.b[i]);
-	for (var i = 0; i < 256; i++ )	hist.b[i]	/= max;
-
-	var sumR = 0, sumG = 0, sumB = 0;
 	for (var i = 0; i < 256; i++ ){
 		sumR	+= hist.r[i];
 		sumG	+= hist.g[i];
