@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Bootstrap, from Twitter</title>
+    <title>ImageProcessing.js</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -42,9 +41,8 @@
           <a class="brand" href="#">ImageProcessing.js</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="#">Home</a></li>
               <li><a href="https://github.com/jeromeetienne/imageprocessing.js">Github</a></li>
-              <li><a href="docs/symbols/ImgProc.html">jsdoc</a></li>
+              <li><a href="docs/symbols/ImgProc.html">JsDoc</a></li>
               <li><a href="http://jetienne.com">Contact</a></li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -54,9 +52,15 @@
 
     <div class="container">
 
-      <h1>Bootstrap starter template</h1>
-      <p>Use this document as a way to quick start any new project.<br> All you get is this message and a barebones HTML document.</p>
-
+	<h1>Image Processing.js <small>Simple Image Processing in javascript</small></h1>
+	<p>
+		imageprocessing.js is an image processing library
+		using <a href='https://developer.mozilla.org/en/DOM/ImageData'>ImageData</a>.
+		<br/>
+		It has been written
+		for <a href='https://plus.google.com/102848659911729905069/posts/SGgoCSeEdCE'>web-5 augmented gesture demo</a>.
+		in tQuery
+	</p>
 <style>
 .thumbnail > canvas {
 	width	: 160px;
@@ -107,8 +111,7 @@
     <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-carousel.js"></script>
     <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap-typeahead.js"></script>
 
-
-	<script src="../imageprocessing.js"> </script>
+	<script src="imageprocessing.js"></script>
 	<script>
 		// get ctxOrig
 		var canvas	= document.getElementById('canvasOriginal');
@@ -151,6 +154,5 @@
 			ctxDst.putImageData(imgDataDst, 0, 0);
 		};
 	</script>
-
   </body>
 </html>
