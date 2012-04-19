@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html><body>
+	<link  href="runner/runner.css" rel='stylesheet'>
+
+	<!-- undercore template for suite header -->
+	<script id="tmplSuiteHead" type="text/template">
+		<div class="head <%- state %>">
+			<h1><%= suite.name %> <span class="run">(run)</span></h1>
+		</div>
+	</script>
+	<!-- undercore template for benchmark -->
+	<script id="tmplBenchItem" type="text/template">
+		<div class="bench <%- state %>">
+			<span class='name'> <%- bench.name %> </span> :
+			<%= (bench.hz === 0 ? '' :  Math.floor(bench.hz)+' ops/sec') %> 
+			<%= (ratio === null ? '' : Math.floor(ratio*10000)/100+' %') %>
+			<span class='viewsource'>(view source)</span>
+			<div>
+				<pre class="source" style="display: none;"><code><%- fnStr %></code></pre>
+			</div>
+		</div>
+	</script>
+	<!-- runner container -->
+	<div id="runner">		
+		<ul class="stats">
+			<li class="runall">run all</li>
+			<li>suites: <span class='nSuites'></span></li>
+			<li>benchmarks: <span class='nBenchmarks'></span></li>
+		</ul>
+		<!-- lots of suite container go here -->
+		<div class="suites"></div>
+	</div>
+
+	<script src="vendor/jquery.js/jquery.js"></script>
+	<script src="vendor/underscore.js/underscore.js"></script>
+	<script src="vendor/benchmark.js/benchmark.js"></script>
+	<script src="runner/runner.js"></script>
+	<script>
+		jQuery(function(){
+			jQuery('#runner .bench').live('click', function(event){
+				jQuery('.source', event.currentTarget).slideToggle();
+			});
+		});
+	</script>
+
+	<!-- here put all your bench script -->
+
+	<script src="../imageprocessing.js"></script>
+	<script src="bench-example.js"></script>
+
+	<!-- DOM for img canvas -->
+	<hr/>
+	<h3>Sample images</h3>
+	<img id="sampleImg" src='../images/lenna.png' style="width:64px; height: 64px"/>
+	<canvas id='canvasSrc' style="width:64px; height: 64px"></canvas>
+	<canvas id='canvasDst' style="width:64px; height: 64px"></canvas>
+
+
+</body></html>
