@@ -52,8 +52,8 @@ ImgProc.luminance	= function(imageData, ratio)
 	var h	= imageData.height;
 	for(var i = 0, y = 0; y < h; y++){
 		for(var x = 0; x < w; x++, i += 4){
-			var luminance	= (0.2126*(p[i+0]/255)) + (0.7152*(p[i+1]/255)) + (0.0722*(p[i+2]/255))
-			luminance	= Math.floor(luminance*ratio*255);
+			var luminance	= (0.2126*p[i+0]) + (0.7152*p[i+1]) + (0.0722*p[i+2])
+			luminance	= Math.floor(luminance*ratio);
 			p[i+0]	= luminance;
 			p[i+1]	= luminance;
 			p[i+2]	= luminance;
