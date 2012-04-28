@@ -8,6 +8,44 @@
 */
 var ImgProc	= {};
 
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Duplicate the ImgProc
+*/
+ImgProc.duplicate	= function(srcImgProc, ctx)
+{
+	var dstImgProc= ctx.createImageData(srcImgProc);
+	var pSrc	= srcImgProc.data;
+	var pDst	= dstImgProc.data;
+	for(var i = 0; i < pSrc.length; i++){
+		pDst[i]	= pSrc[i];
+	}
+	return dstImgProc;
+}
+
+/**
+ * a generic per pixel convert()
+*/
+ImgProc.convert	= function(imageData, callback)
+{
+	var p	= imageData.data;
+	var w	= imageData.width;
+	var h	= imageData.height;
+	var i	= 0;
+	for(var y = 0; y < h; y++){
+		for(var x = 0; x < w; x++, i += 4){
+			callback(p, i, x, y, imageData);
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
 /**
  * horizontal flip
 */
@@ -59,39 +97,6 @@ ImgProc.luminance	= function(imageData, ratio)
 			p[i+2]	= luminance;
 		}
 	}
-}
-
-/**
- * Duplicate the ImgData
-*/
-ImgProc.duplicate	= function(srcImgData, ctx)
-{
-	return ImgProc.copy(srcImgData, ctx.createImageData(srcImgData))
-
-/** old but tested version
-	var dstImgData	= ctx.createImageData(srcImgData);
-	var pSrc	= srcImgData.data;
-	var pDst	= dstImgData.data;
-	for(var i = 0; i < pSrc.length; i++){
-		pDst[i]	= pSrc[i];
-	}
-	return dstImgData;
-*/
-}
-
-/**
- * Copy the ImgData
-*/
-ImgProc.copy	= function(srcImgData, dstImgData)
-{
-	console.assert(srcImgData.width === dstImgData.width );
-	console.assert(srcImgData.height === dstImgData.height );
-	var pSrc	= srcImgData.data;
-	var pDst	= dstImgData.data;
-	for(var i = 0; i < pSrc.length; i++){
-		pDst[i]	= pSrc[i];
-	}
-	return dstImgData;
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -148,6 +153,26 @@ ImgProc.sobel = function(srcImgProc, dstImgProc)
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Invert the colors of an image
+*/
+ImgProc.invert = function(imageData)
+{
+	var p	= imageData.data;
+	for(var i = 0; i < p.length; i += 4){
+	  p[i] = 255 - p[i];
+	  p[i + 1] = 255 - p[i + 1];
+	  p[i + 2] = 255 - p[i + 2];
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+//										//
+//////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * do a threshold on the colors
+*/
 ImgProc.threshold	= function(imageData, r, g, b)
 {
 	var p	= imageData.data;
@@ -165,24 +190,13 @@ ImgProc.threshold	= function(imageData, r, g, b)
 	}
 }
 
-ImgProc.convert	= function(imageData, callback)
-{
-	var p	= imageData.data;
-	var w	= imageData.width;
-	var h	= imageData.height;
-	var i	= 0;
-	for(var y = 0; y < h; y++){
-		for(var x = 0; x < w; x++, i += 4){
-			callback(p, i, x, y, imageData);
-		}
-	}
-}
-
-
 //////////////////////////////////////////////////////////////////////////////////
-//										//
+//		display function (mainly debug)					//
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * display an horizontal line
+*/
 ImgProc.hline	= function(imageData, y, r, g, b, a)
 {
 	var p	= imageData.data;
@@ -200,6 +214,9 @@ ImgProc.hline	= function(imageData, y, r, g, b, a)
 	}
 }
 
+/**
+ * display an vertical line
+*/
 ImgProc.vline	= function(imageData, x, r, g, b, a)
 {
 	var p	= imageData.data;
@@ -218,9 +235,12 @@ ImgProc.vline	= function(imageData, x, r, g, b, a)
 }
 
 //////////////////////////////////////////////////////////////////////////////////
-//										//
+//		utils for horizontal/vertical histogram				//
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * do a 'smooth' on a historgram
+*/
 ImgProc.smoothHistogram	= function(hist, factor)
 {
 	var value	= 0;
@@ -230,6 +250,10 @@ ImgProc.smoothHistogram	= function(hist, factor)
 	}
 }
 
+
+/**
+ * do a windowed average on a histogram
+*/
 ImgProc.windowedAverageHistogram	= function(hist, width)
 {
 	var halfW	= Math.floor(width/2);
@@ -246,7 +270,7 @@ ImgProc.windowedAverageHistogram	= function(hist, width)
 
 	for(var i = 0; i < hist.length; i++){
 		// update window forward
-		if( i + halfW < hist.length ){	
+		if( i + halfW <= hist.length ){	
 			winSum	+= origHist[i+halfW];
 			winLen	++;
 		}
@@ -255,11 +279,14 @@ ImgProc.windowedAverageHistogram	= function(hist, width)
 			winSum	-= origHist[i-halfW];
 			winLen	--;
 		}
-		// compute the actual value
+		// 
 		hist[i]	= winSum/winLen;
 	}
 }
 
+/**
+ * Get the maximum value of a histogram
+*/
 ImgProc.getMaxHistogram	= function(hist, imageData)
 {
 	var max	= -Number.MAX_VALUE;
@@ -273,19 +300,15 @@ ImgProc.getMaxHistogram	= function(hist, imageData)
 	return {max: max, idx: idx}
 }
 
-ImgProc.filterHistogram	= function(hist, filterFn)
-{
-	for(var i = 0; i < hist.length; i++ ){
-		var val	= hist[i];
-		filterFn(val, i, hist);
-	}
-}
 
 //////////////////////////////////////////////////////////////////////////////////
-//										//
+//		vertical histogram						//
 //////////////////////////////////////////////////////////////////////////////////
 
-ImgProc.computeHorizontalHistogram	= function(imageData, filter)
+/**
+ * Compute a vertical histogram
+*/
+ImgProc.computeVerticalHistogram	= function(imageData, filter)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -300,7 +323,10 @@ ImgProc.computeHorizontalHistogram	= function(imageData, filter)
 	return hist;
 }
 
-ImgProc.displayHorizontalHistogram	= function(imageData, hist)
+/**
+ * Display a vertical histogram
+*/
+ImgProc.displayVerticalHistogram	= function(imageData, hist)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -317,7 +343,7 @@ ImgProc.displayHorizontalHistogram	= function(imageData, hist)
 		ctx.fillRect(x, h-hist[x], 1, hist[x]);
 	}
 	// copy the canvas in imageData
-	var srcImgData	= ctx.getImageData(0,0, canvas.width, canvas.height);
+	var srcImgData	= ctx.getImgProc(0,0, canvas.width, canvas.height);
 	var pSrc	= srcImgData.data;
 	var pDst	= imageData.data;
 	for(var i = 0; i < pSrc.length; i += 4){
@@ -333,10 +359,13 @@ ImgProc.displayHorizontalHistogram	= function(imageData, hist)
 
 
 //////////////////////////////////////////////////////////////////////////////////
-//										//
+//		horizontal histogram						//
 //////////////////////////////////////////////////////////////////////////////////
 
-ImgProc.computeVerticalHistogram	= function(imageData, filter)
+/**
+ * compute a horizontal histogram
+*/
+ImgProc.computeHorizontalHistogram	= function(imageData, filter)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -351,7 +380,10 @@ ImgProc.computeVerticalHistogram	= function(imageData, filter)
 	return hist;
 }
 
-ImgProc.displayVerticalHistogram	= function(imageData, hist)
+/**
+ * display a horizontal histogram
+*/
+ImgProc.displayHorizontalHistogram	= function(imageData, hist)
 {
 	var p	= imageData.data;
 	var w	= imageData.width;
@@ -368,7 +400,7 @@ ImgProc.displayVerticalHistogram	= function(imageData, hist)
 		ctx.fillRect(0, y, hist[y], 1);
 	}
 	// copy the canvas in imageData
-	var srcImgData	= ctx.getImageData(0,0, canvas.width, canvas.height);
+	var srcImgData	= ctx.getImgProc(0,0, canvas.width, canvas.height);
 	var pSrc	= srcImgData.data;
 	var pDst	= imageData.data;
 	for(var i = 0; i < pSrc.length; i += 4){
@@ -383,9 +415,12 @@ ImgProc.displayVerticalHistogram	= function(imageData, hist)
 
 
 //////////////////////////////////////////////////////////////////////////////////
-//										//
+//		color histogram							//
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * compute a color histogram
+*/
 ImgProc.computeColorHistogram	= function(imageData)
 {
 	var p	= imageData.data;
@@ -407,6 +442,9 @@ ImgProc.computeColorHistogram	= function(imageData)
 	return hist;
 }
 
+/**
+ * attempts at normalizing the histogram
+*/
 ImgProc.normalizeColorHistogram	= function(colorHistogram)
 {
 	var hist= colorHistogram;
@@ -436,6 +474,9 @@ ImgProc.normalizeColorHistogram	= function(colorHistogram)
 	console.log("sum", max, sumR, sumG, sumB)
 }
 
+/**
+ * display the histogram
+*/
 ImgProc.displayColorHistogram	= function(imageData, colorHistogram)
 {
 	var p	= imageData.data;
@@ -473,7 +514,7 @@ ImgProc.displayColorHistogram	= function(imageData, colorHistogram)
 		ctx.fillRect(i*barW, barYOffset+(barH-valH), barW, valH);
 	}
 
-	var srcImgData	= ctx.getImageData(0,0, canvas.width, canvas.height);
+	var srcImgData	= ctx.getImgProc(0,0, canvas.width, canvas.height);
 	var pSrc	= srcImgData.data;
 	var pDst	= imageData.data;
 	for(var i = 0; i < pSrc.length; i += 4){
@@ -483,4 +524,4 @@ ImgProc.displayColorHistogram	= function(imageData, colorHistogram)
 			pDst[i+2]	= pSrc[i+2];
 		}
 	}
-};
+}
