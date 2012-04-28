@@ -148,6 +148,19 @@ ImgProc.sobel = function(srcImgProc, dstImgProc)
 //										//
 //////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Invert the colors of an image
+*/
+ImgProc.invert = function(imageData)
+{
+	var p	= imageData.data;
+	for(var i = 0; i < p.length; i += 4){
+		p[i] = 255 - p[i];
+		p[i + 1] = 255 - p[i + 1];
+		p[i + 2] = 255 - p[i + 2];
+	}
+}
+
 ImgProc.threshold	= function(imageData, r, g, b)
 {
 	var p	= imageData.data;
